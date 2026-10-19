@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup><CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies></PropertyGroup>
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    <ProjectReference Include="$(JellyfinSourceRoot)/Jellyfin.Api/Jellyfin.Api.csproj" Private="false" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.104.4" />
+    <EmbeddedResource Include="Configuration/config.html" />
+    <EmbeddedResource Include="Configuration/config.js" />
+    <InternalsVisibleTo Include="Jellyfin.Plugin.S3Storage.Tests" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><title>S3 存储</title></head><body>
+<div id="s3StoragePage" data-role="page" class="page type-interior pluginConfigurationPage"
+     data-require="emby-input,emby-button,emby-select,emby-checkbox" data-controller="__plugin/s3storage.js">
+    <div data-role="content"><div class="content-primary">
+        <form class="s3StorageForm">
+            <h2>S3 存储</h2>
+            <p>将本地目录映射到 S3，播放时由客户端直接访问存储服务。</p>
+            <div class="checkboxContainer checkboxContainer-withDescription">
+                <label><input is="emby-checkbox" type="checkbox" class="storageEnabled" /><span>启用 S3 存储</span></label>
+            </div>
+            <div class="storageSettings">
+                <div class="inputContainer"><label class="inputLabel" for="storageTokenHours">播放授权有效期（小时）</label>
+                    <input is="emby-input" id="storageTokenHours" type="number" min="1" max="168" required value="24" />
+                    <div class="fieldDescription">应覆盖影片时长与暂停时间。重新播放时会重新签发授权。</div>
+                </div>
+                <div class="selectContainer"><label class="selectLabel" for="storageBucket">存储映射</label><select is="emby-select" id="storageBucket"></select></div>
+                <div class="verticalSection"><button is="emby-button" type="button" class="raised addBucket">添加映射</button> <button is="emby-button" type="button" class="raised removeBucket">删除映射</button></div>
+                <div class="bucketFields">
+                    <div class="inputContainer"><label class="inputLabel" for="storageName">名称</label><input is="emby-input" id="storageName" data-field="Name" required /></div>
+                    <div class="inputContainer"><label class="inputLabel" for="storageEndpoint">S3 服务地址</label><input is="emby-input" id="storageEndpoint" data-field="Endpoint" type="url" required placeholder="https://s3.example.com" /></div>
+                    <div class="inputContainer"><label class="inputLabel" for="storageRegion">区域</label><input is="emby-input" id="storageRegion" data-field="Region" required /></div>
+                    <div class="inputContainer"><label class="inputLabel" for="storageBucketName">存储桶</label><input is="emby-input" id="storageBucketName" data-field="Bucket" required /></div>
+                    <div class="inputContainer"><label class="inputLabel" for="storagePrefix">初始路径</label><input is="emby-input" id="storagePrefix" data-field="KeyPrefix" /></div>
+                    <div class="inputContainer"><label class="inputLabel" for="storageLocalPath">本地映射目录</label><input is="emby-input" id="storageLocalPath" data-field="LocalPath" required /><div class="fieldDescription">填写挂载目录，或其他需要以公开链接交付的本地目录。</div></div>
+                    <div class="checkboxContainer"><label><input is="emby-checkbox" type="checkbox" data-field="MountWithS3fs" class="mountWithS3fs" /><span>由插件管理 S3FS 挂载（Linux）</span></label><div class="fieldDescription">目录必须为空或不存在。挂载失败或卸载后插件会关闭该目录的访问权限（权限 000），以免媒体库扫描把空目录当作文件已被删除；以 root 运行 Jellyfin 时此保护无效。未勾选时使用已由系统管理的挂载。</div></div>
+                    <div class="mountSettings">
+                        <div class="inputContainer"><label class="inputLabel" for="s3fsExecutable">S3FS 程序路径</label><input is="emby-input" id="s3fsExecutable" data-field="S3fsExecutable" /></div>
+                        <div class="checkboxContainer"><label><input is="emby-checkbox" type="checkbox" data-field="MountAllowOther" /><span>允许其他系统用户访问（需要 FUSE 配置）</span></label></div>
+                    </div>
+                    <div class="inputContainer"><label class="inputLabel" for="storageAccessKey">Access Key ID</label><input is="emby-input" id="storageAccessKey" data-field="AccessKey" autocomplete="off" required /></div>
+                    <div class="inputContainer"><label class="inputLabel" for="storageSecretKey">Secret Access Key</label><input is="emby-input" id="storageSecretKey" data-field="SecretKey" type="password" autocomplete="new-password" required /></div>
+                    <div class="selectContainer"><label class="selectLabel" for="storageDelivery">公开访问方式</label><select is="emby-select" id="storageDelivery" data-field="DeliveryMode"><option value="Worker">Cloudflare Worker</option><option value="Presigned">S3 预签名</option><option value="Public">公开存储桶</option><option value="Private">不提供公开链接</option></select></div>
+                    <div class="inputContainer publicAddress"><label class="inputLabel" for="storagePublicUrl">Worker 或存储桶公开地址</label><input is="emby-input" id="storagePublicUrl" data-field="PublicBaseUrl" type="url" /></div>
+                    <div class="inputContainer workerSecret"><label class="inputLabel" for="storageSigningSecret">Worker 签名密钥</label><input is="emby-input" id="storageSigningSecret" data-field="SigningSecret" type="password" autocomplete="new-password" /><button is="emby-button" type="button" class="raised generateSecret">生成密钥</button><div class="fieldDescription">需与 Worker 的 PLAYBACK_SECRET 一致。</div></div>
+                    <div class="workerManagement">
+                        <h3>Worker 部署</h3>
+                        <div class="inputContainer"><label class="inputLabel" for="workerProjectDirectory">Worker 项目目录</label><input is="emby-input" id="workerProjectDirectory" data-field="WorkerProjectDirectory" /><div class="fieldDescription">填写随插件提供的 worker 目录，并先在该目录执行 npm ci。Jellyfin 所在系统需要 Node.js。</div></div>
+                        <div class="inputContainer"><label class="inputLabel" for="workerName">Worker 名称</label><input is="emby-input" id="workerName" data-field="WorkerName" /></div>
+                        <div class="inputContainer"><label class="inputLabel" for="workerAllowedOrigins">允许的来源（CORS）</label><input is="emby-input" id="workerAllowedOrigins" data-field="AllowedOrigins" placeholder="*" /><div class="fieldDescription">填写 * 允许所有来源，或用逗号分隔 Jellyfin Web 的来源（不带路径），例如 https://jellyfin.example.com。修改后需重新部署 Worker。</div></div>
+                        <div class="inputContainer"><label class="inputLabel" for="cloudflareAccount">Cloudflare Account ID</label><input is="emby-input" id="cloudflareAccount" data-field="CloudflareAccountId" /></div>
+                        <div class="inputContainer"><label class="inputLabel" for="cloudflareToken">Cloudflare API Token</label><input is="emby-input" id="cloudflareToken" data-field="CloudflareApiToken" type="password" autocomplete="new-password" /></div>
+                        <div class="checkboxContainer"><label><input is="emby-checkbox" type="checkbox" data-field="AutoDeployWorker" /><span>保存后自动部署 Worker（包括密钥变化）</span></label></div>
+                        <button is="emby-button" type="button" class="raised buildWorker">验证 Worker 构建</button>
+                        <button is="emby-button" type="button" class="raised deployWorker">部署并更新密钥</button>
+                    </div>
+                    <button is="emby-button" type="button" class="raised testBucket">测试连接</button>
+                    <button is="emby-button" type="button" class="raised refreshStorageStatus">刷新状态</button>
+                    <p class="testResult" role="status"></p>
+                </div>
+            </div>
+            <div><button is="emby-button" type="submit" class="raised button-submit block"><span>保存</span></button></div>
+        </form>
+    </div></div>
+</div></body></html>

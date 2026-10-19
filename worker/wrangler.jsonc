@@ -1,0 +1,12 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "jellyfin-s3-delivery",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-01",
+  "vars": {
+    "S3_ENDPOINT": "https://s3.example.com",
+    "S3_REGION": "us-east-1",
+    "S3_BUCKET": "media",
+    "ALLOWED_ORIGINS": "*"
+  }
+}
